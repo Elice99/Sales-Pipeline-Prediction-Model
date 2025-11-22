@@ -1,7 +1,4 @@
 # Sales-Pipeline-Prediction-Model
-A machine learning-powered REST API for predicting sales pipeline outcomes. Uses XGBoost classification to forecast deal success with high accuracy (ROC-AUC: 0.6482).
-
-# Sales Pipeline Prediction API
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
