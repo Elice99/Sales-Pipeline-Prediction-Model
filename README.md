@@ -182,15 +182,15 @@ Active Deals Data (CSV)
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/sales-pipeline-api.git
-cd sales-pipeline-api
+git clone https://github.com/Elice99/Sales-Pipeline-Prediction-Model.git
+cd Pipeline-Prediction-Model
 
 # 2. Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install pipenv
+pipenv shell (Activate visual env)
 
 # 3. Install dependencies
-pip install -r requirements.txt
+pip install numpy, scikit-learn, FastApi
 
 # 4. Run the API
 python main.py
@@ -207,43 +207,6 @@ Visit the interactive documentation: **http://localhost:8000/docs**
 5. View the prediction result
 
 ---
-
-## 📦 Installation
-
-### System Requirements
-
-| Requirement | Minimum | Recommended |
-|-------------|---------|-------------|
-| Python | 3.9 | 3.11+ |
-| RAM | 2 GB | 8 GB |
-| Disk Space | 500 MB | 2 GB |
-| CPU | 2 cores | 4+ cores |
-
-### Detailed Installation
-
-```bash
-# 1. Clone repository
-git clone https://github.com/yourusername/sales-pipeline-api.git
-cd sales-pipeline-api
-
-# 2. Create and activate virtual environment
-python -m venv venv
-
-# On Linux/Mac:
-source venv/bin/activate
-
-# On Windows:
-venv\Scripts\activate
-
-# 3. Upgrade pip
-pip install --upgrade pip
-
-# 4. Install dependencies
-pip install -r requirements.txt
-
-# 5. Verify installation
-python -c "import fastapi, xgboost, pandas; print('✓ All packages installed')"
-```
 
 ### Dependencies
 
@@ -266,7 +229,7 @@ python-multipart==0.0.6   # Form parsing
 ```
 sales-pipeline-api/
 ├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
+├── pipfile/pipfile.lock               # Python dependencies
 ├── LICENSE                            # MIT License
 ├── .gitignore                         # Git ignore file
 │
@@ -496,19 +459,6 @@ api_key_header = APIKeyHeader(name="X-API-Key")
 | 503 | Service Unavailable | Model not loaded |
 | 500 | Server Error | Unexpected error |
 
-### Rate Limiting
-Currently no rate limiting. For production deployment, add:
-```python
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-
-limiter = Limiter(key_func=get_remote_address)
-app.state.limiter = limiter
-
-@app.post("/predict")
-@limiter.limit("100/minute")
-async def predict_single(deal: DealPredictionInput):
-    ...
 ```
 
 ### Interactive Documentation
@@ -616,7 +566,7 @@ Pipeline(
 | Metric | Score |
 |--------|-------|
 | ROC-AUC | 0.6482 |
-| Accuracy | 0.5838 |
+| Accuracy | 0.6664 |
 | Precision | 0.7037 |
 | Recall | 0.6188 |
 | F1-Score | 0.6585 |
@@ -769,7 +719,7 @@ gunicorn -w 4 -b 0.0.0.0:8000 --timeout 120 main:app
 
 **Dockerfile**
 ```dockerfile
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -813,29 +763,6 @@ docker run -p 8000:8000 sales-pipeline-api
 eb init -p python-3.11 sales-pipeline-api
 eb create production-env
 eb deploy
-```
-
-#### Google Cloud Run
-```bash
-gcloud run deploy sales-pipeline-api \
-  --source . \
-  --platform managed \
-  --region us-central1 \
-  --port 8000
-```
-
-#### Azure App Service
-```bash
-az webapp create -g myResourceGroup -p myServicePlan \
-  -n sales-pipeline-api --runtime "PYTHON:3.11"
-git push azure main
-```
-
-#### Heroku
-```bash
-heroku login
-heroku create sales-pipeline-api
-git push heroku main
 ```
 
 ### Environment Variables
@@ -902,7 +829,7 @@ logging.basicConfig(
 
 ### Model Performance
 - **ROC-AUC Score**: 0.6482 (decent discriminator)
-- **Accuracy**: 58.38% (above 50% baseline)
+- **Accuracy**: 0.6664 (above 50% baseline)
 - **Precision**: 70.37% (when predicting WIN, correct 70% of time)
 - **Recall**: 61.88% (catches 62% of actual WONs)
 
@@ -953,51 +880,10 @@ python model.py
 python --version
 
 # Reinstall dependencies
-pip install --upgrade -r requirements.txt
+pip install pipenv
 
 # Check for port conflicts
 lsof -i :8000  # macOS/Linux
 netstat -ano | findstr :8000  # Windows
 ```
 
-### Issue: Low prediction accuracy
-**Solution:**
-- Verify input data quality
-- Check that all required features are provided
-- Review test_summary_statistics.txt for confidence levels
-- Consider retraining model with new data
-
-### Issue: Memory leak or performance degradation
-**Solution:**
-```python
-# Enable garbage collection in main.py
-import gc
-gc.enable()
-
-# Or use memory profiler
-pip install memory-profiler
-python -m memory_profiler main.py
-```
-
-### Common Errors and Fixes
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `ModuleNotFoundError: No module named 'fastapi'` | Missing dependency | `pip install -r requirements.txt` |
-| `ConnectionRefusedError: [Errno 111]` | API not running | `python main.py` |
-| `ValueError: feature_names mismatch` | Wrong feature order | Ensure features match training order |
-| `MemoryError` | Insufficient RAM | Use batch processing, increase server RAM |
-| `TypeError: unhashable type: 'list'` | Pydantic validation | Check JSON input format |
-
----
-
-## 👥 Contributing
-
-### Getting Started with Development
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Write tests for new features
-5. Commit: `git commit -m 'Add amazing feature'`
-6. Push: `git push origin feature/amazing-feature`
