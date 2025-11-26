@@ -369,36 +369,30 @@ print(classification_report(y_test, preds, digits=4))
 # -----------------------------
 # Save artifacts
 # -----------------------------
+# Convert DataFrames to dicts for easier lookup
+
+stats_maps = {}
+for col, stats_df in full_train_stats.items():
+    stats_df = stats_df.set_index(col)
+    stats_maps[col] = {
+        "win_rate": stats_df[f"{col}_win_rate"].to_dict(),
+        "total_deals": stats_df[f"{col}_total_deals"].to_dict(),
+        "total_win": stats_df[f"{col}_win"].to_dict()
+    }
+
+
 artifacts = {
-    'model': model,
-    'preprocessor': preprocessor,
-    'feature_names': feature_columns,
-    'categorical_features': categorical,
-    'numerical_features': numerical,
-    'test_roc_auc': float(roc)
+'model': model,
+'preprocessor': preprocessor,
+'feature_names': feature_columns,
+'categorical_features': categorical,
+'numerical_features': numerical,
+'stats_maps': stats_maps,  # <-- include the maps
+'global_train_speed': global_train_speed,  # for agent_avg_days_to_close fallback
+'test_roc_auc': float(roc)
 }
 
 with open(OUTPUT_FILE, 'wb') as f_out:
     pickle.dump(artifacts, f_out)
 print(f"\n✓ Model and artifacts saved to: {OUTPUT_FILE}")
-
-# -----------------------------
-# Predict on active deals and save
-# -----------------------------
-if len(df_active) > 0: #Ensures there is at least one row in df_active.
-    #Ensures the active dataset matches the training dataset’s structure
-    df_active_proc = ensure_features_exist(df_active, numerical, categorical) 
-    X_active = df_active_proc[feature_columns] #feature_columns should match the order and names used during training.
-    active_probs = model.predict_proba(X_active)[:, 1]
-    df_active_proc['won_probability'] = active_probs
-    
-    #save_cols defines the columns you want to save for reporting or review
-    save_cols = ['account', 'sales_agent', 'product', 'engage_date', 'won_probability']
-    '''
-    available_cols filters out columns that might not exist in the dataset.
-    Ensures the code doesn’t break if a column is missing.
-    '''
-    available_cols = [c for c in save_cols if c in df_active_proc.columns]
-    df_active_proc[available_cols].to_csv(ACTIVE_PRED_CSV, index=False)
-    print(f"✓ Active deals predictions saved to: {ACTIVE_PRED_CSV}")
 

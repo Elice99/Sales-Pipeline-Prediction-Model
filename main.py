@@ -7,24 +7,11 @@ PURPOSE:
     This script builds a production-ready API using FastAPI that:
     1. Loads the trained model from model.py
     2. Exposes HTTP endpoints for making predictions
-    3. Accepts deals data via API request
-    4. Returns predictions (WIN vs LOST) with probabilities
-    5. Includes error handling and validation
-    6. Can be deployed to production (AWS, Azure, Google Cloud, Heroku, etc.)
+    3. Accepts deals data via API request 
+    4. Handles all feature engineering internally on the backend.
+    5. Returns predictions (WIN vs LOST) with probabilities
+    6. Includes error handling and validation
 
-KEY ENDPOINTS:
-    POST /predict - Single deal prediction
-    POST /predict-batch - Multiple deals prediction
-    GET /health - Health check
-    GET /metrics - Model performance metrics
-    GET / - Welcome message
-
-EXAMPLE USAGE:
-    python main.py  # Starts the server on http://localhost:8000
-    
-    Then visit:
-    http://localhost:8000/docs  # Swagger UI (interactive API documentation)
-    http://localhost:8000/redoc # ReDoc (alternative API documentation)
 ================================================================================
 """
 
@@ -72,7 +59,7 @@ It automatically creates documentation and validates inputs
 
 app = FastAPI(
     title="Sales Pipeline Prediction API",  
-    description="Predicts sales deals outcomes (WIN vs LOST)", 
+    description="Predicts sales deals outcomes (WIN vs LOST) using raw data input.", 
     version="1.0.0",  # API version
     docs_url="/docs",  # Where Swagger UI is available
     redoc_url="/redoc"  # Where ReDoc is available
@@ -125,7 +112,7 @@ def load_model():
         logger.info(f"Loading model from {MODEL_PATH}")
         with open(MODEL_PATH, 'rb') as f:
             artifacts = pickle.load(f) #deserializes (loads) your trained model Stores it into the global artifacts variable
-        logger.info("✓ Model loaded successfully")
+        logger.info(" Model loaded successfully")
         return artifacts
     except FileNotFoundError:
         logger.error(f"Model file not found: {MODEL_PATH}")
@@ -164,11 +151,7 @@ class DealPredictionInput(BaseModel):
         "regional_office": "central",
         "company_size": "large",
         "year_established": 1995,
-        "employees_log": 8.5,
-        "deal_age": 45,
-        "agent_win_rate": 0.65,
-        "account_win_rate": 0.58,
-        "sector_win_rate": 0.62
+
     }
     """
     
@@ -178,53 +161,14 @@ class DealPredictionInput(BaseModel):
     account: str = Field(..., description="Customer account name")
     sector: str = Field(..., description="Industry sector")
     office_location: str = Field(..., description="Office location")
+    engage_date: str = Field(..., description="Deal engagement date (YYYY-MM-DD format)")
     
-    # OPTIONAL FIELDS (have default values)
+    # OPTIONAL FIELDS (with defaults to fill any missing data)
     manager: Optional[str] = Field(default="unknown", description="Manager name")
     regional_office: Optional[str] = Field(default="central", description="Regional office")
-    company_size: Optional[str] = Field(default="large", description="Company size category")
     year_established: Optional[int] = Field(default=1995, description="Year company was established")
-    employees_log: Optional[float] = Field(default=8.0, description="Log of number of employees")
-    deal_age: Optional[int] = Field(default=30, description="Days since deal engagement")
-    agent_win_rate: Optional[float] = Field(default=0.6, description="Agent's historical win rate")
-    account_win_rate: Optional[float] = Field(default=0.6, description="Account's historical win rate")
-    sector_win_rate: Optional[float] = Field(default=0.6, description="Sector's historical win rate")
-    office_win_rate: Optional[float] = Field(default=0.6, description="Office's historical win rate")
-    region_win_rate: Optional[float] = Field(default=0.6, description="Region's historical win rate")
-    company_size_win_rate: Optional[float] = Field(default=0.6, description="Company size win rate")
-    product_win_rate: Optional[float] = Field(default=0.6, description="Product win rate")
-    agent_avg_days_to_close: Optional[float] = Field(default=45, description="Agent's avg days to close")
-    agent_total_deals: Optional[int] = Field(default=100, description="Agent's total deals")
-    agent_win: Optional[int] = Field(default=60, description="Agent's won deals")
-    account_deal_count: Optional[int] = Field(default=50, description="Account's total deals")
-    account_total_win: Optional[int] = Field(default=30, description="Account's won deals")
-    sector_deal_count: Optional[int] = Field(default=500, description="Sector's total deals")
-    sector_total_win: Optional[int] = Field(default=310, description="Sector's won deals")
-    office_deal_count: Optional[int] = Field(default=200, description="Office's total deals")
-    office_total_win: Optional[int] = Field(default=120, description="Office's won deals")
-    region_deal_count: Optional[int] = Field(default=800, description="Region's total deals")
-    region_total_win: Optional[int] = Field(default=504, description="Region's won deals")
-    company_size_deal_count: Optional[int] = Field(default=400, description="Company size deal count")
-    company_size_total_win: Optional[int] = Field(default=252, description="Company size won deals")
-    product_deal_count: Optional[int] = Field(default=300, description="Product deal count")
-    product_total_win: Optional[int] = Field(default=192, description="Product won deals")
-    agent_product_synergy: Optional[float] = Field(default=0.39, description="Agent-product synergy")
-    agent_win_efficiency: Optional[float] = Field(default=40, description="Agent win efficiency")
-    agent_vs_sector: Optional[float] = Field(default=0.03, description="Agent vs sector performance")
-    deal_complexity: Optional[float] = Field(default=2.5, description="Deal complexity index")
-    office_load: Optional[float] = Field(default=1.67, description="Office load ratio")
-    product_sector_fit: Optional[float] = Field(default=0.372, description="Product-sector fit")
-    region_size_match: Optional[float] = Field(default=0.381, description="Region-size match")
-    quarter_risk: Optional[float] = Field(default=1.0, description="Quarter risk factor")
-    is_quarter_end: Optional[int] = Field(default=0, description="Is quarter end (0 or 1)")
-    sales_velocity_ratio: Optional[float] = Field(default=1.0, description="Sales velocity ratio")
-    pace_weighted_agent_score: Optional[float] = Field(default=0.65, description="Pace-weighted agent score")
-    velocity_complexity_index: Optional[float] = Field(default=8.5, description="Velocity-complexity index")
-    month_engaged: Optional[int] = Field(default=6, description="Month engagement (1-12)")
-    quarter_engaged: Optional[int] = Field(default=2, description="Quarter engagement (1-4)")
-    day_of_week_engaged: Optional[int] = Field(default=3, description="Day of week (0=Mon, 6=Sun)")
-    is_weekend: Optional[int] = Field(default=0, description="Is weekend (0 or 1)")
-    days_into_year: Optional[int] = Field(default=150, description="Days into year (1-365)")
+    employees: Optional[float] = Field(default=8.0, description="number of employees")
+    
 
 
 class BatchPredictionInput(BaseModel):
@@ -321,6 +265,107 @@ def ensure_features_exist(df, num_feats, cat_feats):
     
     return df
 
+def compute_all_features(df, artifacts):
+    """
+    FUNCTION: compute_all_features(df, artifacts)
+    
+    PURPOSE: Replicate the entire feature engineering logic from models.py  
+        using saved artifacts (stats_maps, global_train_speed).
+    """
+    df = df.copy()
+    stats_maps = artifacts.get('stats_maps', {})
+    global_train_speed = artifacts.get('global_train_speed', 30.0)
+    
+    # STANDARDIZATION & CORE TRANSFORMS (models.py logic)
+    df.columns = df.columns.str.lower().str.replace(' ', '_')
+    string_cols = df.select_dtypes(include='object').columns
+    for col in string_cols:
+        df[col] = df[col].fillna('').astype(str).str.lower().str.replace(' ', '_')
+
+    # employees_log & company_size creation
+    df['employees_log'] = np.log1p(df['employees'].fillna(0))
+    bins = [0, 50, 250, 1000, 5000, 15000, np.inf]
+    labels = ['micro', 'small', 'medium', 'large', 'enterprise', 'mega']
+    df['company_size'] = pd.cut(df['employees'].fillna(0), bins=bins, labels=labels).astype(str).fillna('missing')
+    
+    # TEMPORAL FEATURES (models.py logic)
+    df['engage_date'] = pd.to_datetime(df['engage_date'], errors='coerce')
+    
+    # Calculate deal_age on the backend using current date
+    ref_date = datetime.now()
+    # Calculate active duration (since the deal is still "active" for prediction)
+    df['deal_age'] = (ref_date - df['engage_date']).dt.days.fillna(0.0)
+    
+    # TEMPORAL FEATURES (models.py logic)
+    df['engage_date'] = pd.to_datetime(df['engage_date'], errors='coerce')
+    df['month_engaged'] = df['engage_date'].dt.month.fillna(6).astype(int)
+    df['quarter_engaged'] = df['engage_date'].dt.quarter.fillna(2).astype(int)
+    df['day_of_week_engaged'] = df['engage_date'].dt.dayofweek.fillna(3).astype(int)
+    df['is_weekend'] = (df['day_of_week_engaged'].isin([5, 6])).astype(int)
+    df['days_into_year'] = df['engage_date'].dt.dayofyear.fillna(150).astype(int)
+    # The raw 'deal_age' is used directly from the input.
+
+    # STATISTICAL FEATURES (Target Encoding using stats_maps)
+    categorical_cols_for_stats = ['sales_agent', 'product', 'account', 'sector', 'office_location', 'manager', 'regional_office', 'company_size']
+    
+    for col in categorical_cols_for_stats:
+        if col in df.columns: 
+            win_rate_col = f'{col}_win_rate'
+            total_deals_col = f'{col}_total_deals'
+            total_win_col = f'{col}_win'
+            
+            # Use safe fallbacks: 0.5 for rate, 1.0 for counts
+            win_rate_map = stats_maps.get(col, {}).get('win_rate', {})
+            total_deals_map = stats_maps.get(col, {}).get('total_deals', {})
+            total_win_map = stats_maps.get(col, {}).get('total_win', {})
+
+            df[win_rate_col] = df[col].map(win_rate_map).fillna(0.5)
+            df[total_deals_col] = df[col].map(total_deals_map).fillna(1.0) 
+            df[total_win_col] = df[col].map(total_win_map).fillna(0.5) 
+            
+    # ALIASES (Must replicate the mapping from models.py)
+    alias_map = {
+        'sales_agent_win_rate': 'agent_win_rate', 'sales_agent_total_deals': 'agent_total_deals', 'sales_agent_win': 'agent_win',
+        'account_win_rate': 'account_win_rate', 'account_total_deals': 'account_deal_count', 'account_win': 'account_total_win',
+        'sector_win_rate': 'sector_win_rate', 'sector_total_deals': 'sector_deal_count', 'sector_win': 'sector_total_win',
+        'office_location_win_rate': 'office_win_rate', 'office_location_total_deals': 'office_deal_count', 'office_location_win': 'office_total_win',
+        'regional_office_win_rate': 'region_win_rate', 'regional_office_total_deals': 'region_deal_count', 'regional_office_win': 'region_total_win',
+        'company_size_win_rate': 'company_size_win_rate', 'company_size_total_deals': 'company_size_deal_count', 'company_size_win': 'company_size_total_win',
+        'product_win_rate': 'product_win_rate', 'product_total_deals': 'product_deal_count', 'product_win': 'product_total_win'
+    }
+
+    for long_name, short_name in alias_map.items():
+        if long_name in df.columns:
+            df[short_name] = df[long_name]
+        elif short_name not in df.columns:
+             df[short_name] = 0
+
+    # AGENT SPEED
+    # Using the global average speed saved in artifacts as the only available data source
+    df['agent_avg_days_to_close'] = global_train_speed 
+
+    # 6. ADVANCED INTERACTION FEATURES (11 formulas from models.py)
+    epsilon = 1e-6 
+    
+    df['agent_product_synergy'] = df['agent_win_rate'] * df['product_win_rate']
+    df['agent_win_efficiency'] = (1 - df['agent_win_rate']) * df['agent_total_deals']
+    df['agent_vs_sector'] = df['agent_win_rate'] - df['sector_win_rate']
+    df['deal_complexity'] = (df['employees_log'] * df['deal_age'] / (df['agent_total_deals'] + 1))
+    df['office_load'] = df['office_deal_count'] / (df['office_total_win'] + 1)
+    df['product_sector_fit'] = df['product_win_rate'] * df['sector_win_rate']
+    df['region_size_match'] = df['region_win_rate'] * df['company_size_win_rate']
+    df['quarter_risk'] = df['quarter_engaged'].map({1: 0.8, 2: 0.9, 3: 1.0, 4: 1.2}).fillna(1.0)
+    df['is_quarter_end'] = df['month_engaged'].isin([3, 6, 9, 12]).astype(int)
+    df['sales_velocity_ratio'] = df['deal_age'] / (df['agent_avg_days_to_close'] + epsilon)
+    df['pace_weighted_agent_score'] = df['agent_win_rate'] / (df['sales_velocity_ratio'] + epsilon)
+    df['velocity_complexity_index'] = df['sales_velocity_ratio'] * df['employees_log']
+
+    # Remove raw date column as it's not a final feature
+    df = df.drop(columns=['engage_date'], errors='ignore')
+
+    return df
+
+
 
 def make_prediction(request_data):
     """
@@ -344,37 +389,36 @@ def make_prediction(request_data):
         7. Format and return results
     """
     try:
-        # Step 1: Convert request data to dictionary then to DataFrame
+        # Convert request data to dictionary then to DataFrame
         deal_dict = request_data.dict()  # Convert Pydantic model to dict
         df = pd.DataFrame([deal_dict])  # Convert to single-row DataFrame
         
-        # Step 2: Ensure all features exist
-        df = ensure_features_exist(
-            df,
-            artifacts['numerical_features'],
-            artifacts['categorical_features']
-        )
+        #  CRITICAL: Compute all engineered features from the raw data
+        df = compute_all_features(df, artifacts)
         
-        # Step 3: Extract features in correct order
+        # Ensure all features exist
+        df = ensure_features_exist( df, artifacts['numerical_features'], artifacts['categorical_features'])
+        
+        # Extract features in correct order
         feature_columns = artifacts['feature_names']
         X = df[feature_columns]
         
-        # Step 4: Get probability prediction from model
+        # Get probability prediction from model
         probabilities = artifacts['model'].predict_proba(X)[:, 1]
         prob_won = float(probabilities[0])  # Extract single probability value
         prob_lost = 1 - prob_won
         
-        # Step 5: Apply threshold (0.5) for binary prediction
+        # Apply threshold (0.5) for binary prediction
         threshold = 0.5
         if prob_won >= threshold:
             predicted_outcome = "WON"
         else:
             predicted_outcome = "LOST"
         
-        # Step 6: Calculate confidence (how sure is the model?)
+        # Calculate confidence (how sure is the model?)
         confidence = max(prob_won, prob_lost)
         
-        # Step 7: Format and return results
+        # Format and return results
         return {
             "predicted_outcome": predicted_outcome,
             "probability_won": round(prob_won, 4),
@@ -549,7 +593,7 @@ async def predict_batch(batch: BatchPredictionInput):
         BatchPredictionOutput: List of predictions plus summary statistics
     
     EXAMPLE REQUEST (curl):
-        curl -X POST "http://localhost:8000/predict-batch" \
+        curl -X POST "http://localhost:9696/predict-batch" \
              -H "Content-Type: application/json" \
              -d '{
                  "deals": [
@@ -687,25 +731,18 @@ if __name__ == "__main__":
     print("\n" + "=" * 80)
     print("STARTING SALES PIPELINE API")
     print("=" * 80)
-    print("\n✓ API Server Starting...")
+    print("\n API Server Starting...")
     print("\nAccess API Documentation:")
-    print("  - Swagger UI: http://localhost:8000/docs")
-    print("  - ReDoc: http://localhost:8000/redoc")
+    print("  - Swagger UI: http://localhost:8000/docs") 
+    print("  - ReDoc: http://localhost:8000/redoc") 
     print("\nTest the API:")
-    print("  - Health Check: http://localhost:8000/health")
-    print("  - Get Metrics: http://localhost:8000/metrics")
+    print("  - Health Check: http://localhost:8000/health") 
+    print("  - Get Metrics: http://localhost:8000/metrics") 
     print("  - Make Prediction: POST http://localhost:8000/predict")
     print("\n" + "=" * 80 + "\n")
     
-    # Start the server
-    uvicorn.run(
-        app,
-        host="0.0.0.0",  # Listen on all network interfaces
-        port=8000,  # Listen on port 8000
-        reload=True,  # Reload on code changes (development)
-        log_level="info"  # Log level
-    )
-
+    if __name__ == "__main__":
+        uvicorn.run("main:app", host="0.0.0.0", port=9696, reload=True)
 
 """
 ================================================================================
@@ -720,7 +757,7 @@ DEPLOYMENT INSTRUCTIONS
    
    Option A - Using Gunicorn (Linux/Mac):
    pip install gunicorn
-   gunicorn -w 4 -b 0.0.0.0:8000 main:app
+   gunicorn -w 4 -b 0.0.0.0:9696 main:app
    
    Option B - Using Docker:
    Create Dockerfile:

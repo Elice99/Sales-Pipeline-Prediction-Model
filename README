@@ -5,7 +5,9 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-Production%20Ready-brightgreen.svg)](#status)
 
-> A machine learning-powered REST API for predicting sales pipeline outcomes. Uses XGBoost classification to forecast deal success with high accuracy (ROC-AUC: 0.6482).
+> This repository contains a production-ready Machine Learning API built with FastAPI for predicting the outcome (WIN or LOST) of deals in a sales pipeline. The core artifact is a pre-trained XGBoost model pipeline, which includes specialized feature engineering steps (like CatBoost Encoding and custom statistical lookups) essential for generating accurate forecasts.
+
+The API is designed for robustness, speed, and easy containerized deployment using Docker.
 
 ## 📋 Table of Contents
 
@@ -175,25 +177,25 @@ Active Deals Data (CSV)
 ### Prerequisites
 
 - Python 3.9 or higher
-- pip (Python package manager)
-- Virtual environment (recommended)
+- Pipenv (Recommended package manager)
+- Docker (For containerized deployment)
 
 ### Installation (2 minutes)
 
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/yourusername/sales-pipeline-api.git
 cd sales-pipeline-api
 
-# 2. Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Install dependencies
+pipenv install
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# Run the API
+pipenv run uvicorn main:app --host 0.0.0.0 --port 8000
 
-# 4. Run the API
-python main.py
+# Access the API:
+Open your browser to the interactive Swagger UI documentation:
+http://localhost:8000/docs
 ```
 
 ### First Prediction (30 seconds)
@@ -222,27 +224,17 @@ Visit the interactive documentation: **http://localhost:8000/docs**
 ### Detailed Installation
 
 ```bash
-# 1. Clone repository
+# Clone repository
 git clone https://github.com/yourusername/sales-pipeline-api.git
 cd sales-pipeline-api
 
-# 2. Create and activate virtual environment
-python -m venv venv
+# Create and activate virtual environment
+pip install pipenv
+pipenv shell
 
-# On Linux/Mac:
-source venv/bin/activate
+# Install dependencies
+pipenv install 
 
-# On Windows:
-venv\Scripts\activate
-
-# 3. Upgrade pip
-pip install --upgrade pip
-
-# 4. Install dependencies
-pip install -r requirements.txt
-
-# 5. Verify installation
-python -c "import fastapi, xgboost, pandas; print('✓ All packages installed')"
 ```
 
 ### Dependencies
@@ -470,12 +462,7 @@ http://localhost:8000
 
 ### Authentication
 Currently, the API doesn't require authentication. For production, add API key authentication:
-```python
-from fastapi import Security, HTTPException
-from fastapi.security import APIKeyHeader
 
-api_key_header = APIKeyHeader(name="X-API-Key")
-```
 
 ### Endpoints Summary
 
@@ -496,20 +483,6 @@ api_key_header = APIKeyHeader(name="X-API-Key")
 | 503 | Service Unavailable | Model not loaded |
 | 500 | Server Error | Unexpected error |
 
-### Rate Limiting
-Currently no rate limiting. For production deployment, add:
-```python
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-
-limiter = Limiter(key_func=get_remote_address)
-app.state.limiter = limiter
-
-@app.post("/predict")
-@limiter.limit("100/minute")
-async def predict_single(deal: DealPredictionInput):
-    ...
-```
 
 ### Interactive Documentation
 - **Swagger UI**: http://localhost:8000/docs
@@ -759,10 +732,10 @@ python main.py
 # Runs on http://localhost:8000
 ```
 
-### Production with Gunicorn
+### Production with uvicorn
 ```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 --timeout 120 main:app
+pipenv install gunicorn
+uvicorn main:app --reload
 ```
 
 ### Docker Deployment
@@ -773,37 +746,41 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+#Copy the pipfile install dependencies
 
-# Copy application
-COPY . .
+COPY Pipfile Pipfile.lock ./
 
-# Run application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
+#FIX: Install pipenv globally in the container first, as it's not included in the slim image.
 
-**docker-compose.yml**
-```yaml
-version: '3.8'
+RUN pip install pipenv
 
-services:
-  api:
-    build: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./logs:/app/logs
-    environment:
-      - LOG_LEVEL=info
-    restart: unless-stopped
+#Now install project dependencies using pipenv
+
+RUN pipenv install --system --deploy
+
+#Copy model artifacts and application code
+#NOTE: You must run model_trainer.py locally to generate sales_pipeline_model.pkl
+
+COPY sales_pipeline_model.pkl ./
+
+#CRITICAL: Copy your application code
+
+COPY main.py ./
+
+#Expose the port that FastAPI will run on
+
+EXPOSE 9696
+
+#Command to run the application using Uvicorn
+#Start uvicorn
+
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9696"]
 ```
 
 **Build and Run**
 ```bash
-docker build -t sales-pipeline-api .
-docker run -p 8000:8000 sales-pipeline-api
+docker build -t sales-api .
+docker run -p 9696:9696 sales-api
 ```
 
 ### Cloud Deployment
@@ -843,7 +820,7 @@ git push heroku main
 # .env file
 LOG_LEVEL=info
 MODEL_PATH=sales_pipeline_model.pkl
-API_PORT=8000
+API_PORT=9696
 API_HOST=0.0.0.0
 WORKERS=4
 ```
@@ -874,14 +851,6 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Rate Limiting
-limiter = Limiter(key_func=get_remote_address)
-@app.post("/predict")
-@limiter.limit("100/minute")
-async def predict_single(deal: DealPredictionInput):
-    ...
-```
-
 ### Logging Configuration
 
 Edit **main.py**:
@@ -902,7 +871,7 @@ logging.basicConfig(
 
 ### Model Performance
 - **ROC-AUC Score**: 0.6482 (decent discriminator)
-- **Accuracy**: 58.38% (above 50% baseline)
+- **Accuracy**: 66.6% (above 50% baseline)
 - **Precision**: 70.37% (when predicting WIN, correct 70% of time)
 - **Recall**: 61.88% (catches 62% of actual WONs)
 
@@ -953,12 +922,8 @@ python model.py
 python --version
 
 # Reinstall dependencies
-pip install --upgrade -r requirements.txt
+pipenv install package(pipfile)
 
-# Check for port conflicts
-lsof -i :8000  # macOS/Linux
-netstat -ano | findstr :8000  # Windows
-```
 
 ### Issue: Low prediction accuracy
 **Solution:**
@@ -967,23 +932,11 @@ netstat -ano | findstr :8000  # Windows
 - Review test_summary_statistics.txt for confidence levels
 - Consider retraining model with new data
 
-### Issue: Memory leak or performance degradation
-**Solution:**
-```python
-# Enable garbage collection in main.py
-import gc
-gc.enable()
-
-# Or use memory profiler
-pip install memory-profiler
-python -m memory_profiler main.py
-```
-
 ### Common Errors and Fixes
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `ModuleNotFoundError: No module named 'fastapi'` | Missing dependency | `pip install -r requirements.txt` |
+| `ModuleNotFoundError: No module named 'fastapi'` | Missing dependency | `pipenv install (pipfile) |
 | `ConnectionRefusedError: [Errno 111]` | API not running | `python main.py` |
 | `ValueError: feature_names mismatch` | Wrong feature order | Ensure features match training order |
 | `MemoryError` | Insufficient RAM | Use batch processing, increase server RAM |
