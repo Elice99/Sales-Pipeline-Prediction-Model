@@ -936,7 +936,7 @@ pipenv install package(pipfile)
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `ModuleNotFoundError: No module named 'fastapi'` | Missing dependency | `pipenv install (pipfile) |
+| `ModuleNotFoundError: No module named 'fastapi'` | Missing dependency | `pipenv install (pi) |
 | `ConnectionRefusedError: [Errno 111]` | API not running | `python main.py` |
 | `ValueError: feature_names mismatch` | Wrong feature order | Ensure features match training order |
 | `MemoryError` | Insufficient RAM | Use batch processing, increase server RAM |
