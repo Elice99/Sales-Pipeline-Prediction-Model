@@ -3,7 +3,7 @@ import numpy as np
 import pyodbc
 import pickle
 import warnings
-from datetime import datetime
+
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -79,7 +79,7 @@ print("✓ Column names and values standardized\n")
 df_training = df[df['deal_stage'].isin(['won', 'lost'])].copy()
 df_active = df[df['deal_stage'] == 'engaging'].copy()
 
-print(f"\nAfter filtering:")
+print("\nAfter filtering:")
 print(f"Training data (won + lost): {len(df_training)} rows")
 print(f"Active deals (to predict): {len(df_active)} rows")
 
@@ -142,7 +142,7 @@ def deal_duration(df, ref_date):
 
 df_full_train = deal_duration(df_full_train, ref_date)
 df_test = deal_duration(df_test, ref_date)
-print(f"✓ Deal age calculated")
+print("✓ Deal age calculated")
 
 # -------- FEATURE ENGINEERING --------
 print("\nCreating Features...")

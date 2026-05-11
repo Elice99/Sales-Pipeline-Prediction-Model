@@ -1426,3 +1426,152 @@
 2025-11-25 18:14:14,509 - main - INFO - Test ROC-AUC: 0.6482
 2025-11-26 09:38:10,685 - main - INFO - Received prediction request for deal: Cancity
 2025-11-26 09:38:12,696 - main - INFO - Prediction result: WON (89.83% confidence)
+2026-05-11 14:42:55,923 - main - INFO - ================================================================================
+2026-05-11 14:42:55,927 - main - INFO - SALES PIPELINE API - STARTING UP
+2026-05-11 14:42:55,933 - main - INFO - ================================================================================
+2026-05-11 14:42:55,933 - main - INFO - Loading model from sales_pipeline_model.pkl
+2026-05-11 14:42:59,237 - main - INFO -  Model loaded successfully
+2026-05-11 14:42:59,237 - main - INFO - Model loaded with 50 features
+2026-05-11 14:42:59,237 - main - INFO - Test ROC-AUC: 0.6482
+2026-05-11 15:26:12,762 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:20,816 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:26,000 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:38,162 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:38,538 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:40,673 - main - INFO - ================================================================================
+2026-05-11 15:26:40,675 - main - INFO - SALES PIPELINE API - STARTING UP
+2026-05-11 15:26:40,675 - main - INFO - ================================================================================
+2026-05-11 15:26:40,676 - main - INFO - Loading model from sales_pipeline_model.pkl
+2026-05-11 15:26:40,776 - watchfiles.main - INFO - 6 changes detected
+2026-05-11 15:26:45,059 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:45,788 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:46,766 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:47,273 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:47,852 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:48,503 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:49,170 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:50,256 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:51,071 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:52,365 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:52,756 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:53,029 - main - INFO -  Model loaded successfully
+2026-05-11 15:26:53,044 - main - INFO - Model loaded with 50 features
+2026-05-11 15:26:53,047 - main - INFO - Test ROC-AUC: 0.6482
+2026-05-11 15:26:53,140 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:53,565 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:53,980 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:54,380 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:54,811 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:55,181 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:55,603 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:55,979 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:56,360 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:56,734 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:57,110 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:57,499 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:57,887 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:58,246 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:58,605 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:58,963 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:59,322 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:26:59,680 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:00,041 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:00,402 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:00,808 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:01,268 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:01,655 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:02,080 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:02,514 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:02,945 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:03,304 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:03,661 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:05,233 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:14,062 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:16,122 - watchfiles.main - INFO - 2 changes detected
+2026-05-11 15:27:22,999 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:23,124 - main - INFO - ================================================================================
+2026-05-11 15:27:23,126 - main - INFO - SALES PIPELINE API - STARTING UP
+2026-05-11 15:27:23,137 - main - INFO - ================================================================================
+2026-05-11 15:27:23,153 - main - INFO - Loading model from sales_pipeline_model.pkl
+2026-05-11 15:27:23,381 - watchfiles.main - INFO - 6 changes detected
+2026-05-11 15:27:23,752 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:24,245 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:24,798 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:25,417 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:26,245 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:28,996 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:29,285 - main - INFO -  Model loaded successfully
+2026-05-11 15:27:29,300 - main - INFO - Model loaded with 50 features
+2026-05-11 15:27:29,315 - main - INFO - Test ROC-AUC: 0.6482
+2026-05-11 15:27:33,460 - watchfiles.main - INFO - 2 changes detected
+2026-05-11 15:27:41,473 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:41,635 - main - INFO - ================================================================================
+2026-05-11 15:27:41,673 - main - INFO - SALES PIPELINE API - STARTING UP
+2026-05-11 15:27:41,701 - main - INFO - ================================================================================
+2026-05-11 15:27:41,751 - main - INFO - Loading model from sales_pipeline_model.pkl
+2026-05-11 15:27:41,878 - watchfiles.main - INFO - 6 changes detected
+2026-05-11 15:27:42,266 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:42,643 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:43,052 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:43,476 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:43,850 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:44,236 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:44,605 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:45,004 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:45,405 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:45,762 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:46,096 - main - INFO -  Model loaded successfully
+2026-05-11 15:27:46,101 - main - INFO - Model loaded with 50 features
+2026-05-11 15:27:46,104 - main - INFO - Test ROC-AUC: 0.6482
+2026-05-11 15:27:46,145 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:46,520 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:46,943 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:47,366 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:47,770 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:48,166 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:48,544 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:48,927 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:49,287 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:49,655 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:50,020 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:50,389 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:50,761 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:51,134 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:51,508 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:51,874 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:52,255 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:52,616 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:52,972 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:53,348 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:53,720 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:54,089 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:54,494 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:54,881 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:55,246 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:55,623 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:55,991 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:56,351 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:56,723 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:57,114 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:57,523 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:57,920 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:58,290 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:58,673 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:59,066 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:59,431 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:27:59,828 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:00,325 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:00,815 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:01,283 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:01,801 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:29,489 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:32,384 - watchfiles.main - INFO - 2 changes detected
+2026-05-11 15:28:34,725 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:39,578 - watchfiles.main - INFO - 1 change detected
+2026-05-11 15:28:43,827 - main - INFO - ================================================================================
+2026-05-11 15:28:43,866 - main - INFO - SALES PIPELINE API - STARTING UP
+2026-05-11 15:28:43,911 - main - INFO - ================================================================================
+2026-05-11 15:28:43,936 - main - INFO - Loading model from sales_pipeline_model.pkl
+2026-05-11 15:28:50,901 - main - INFO -  Model loaded successfully
+2026-05-11 15:28:50,901 - main - INFO - Model loaded with 50 features
+2026-05-11 15:28:50,902 - main - INFO - Test ROC-AUC: 0.6482

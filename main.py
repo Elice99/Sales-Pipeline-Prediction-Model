@@ -20,6 +20,8 @@ PURPOSE:
 # ============================================================================
 
 from fastapi import FastAPI, HTTPException  # FastAPI framework for building APIs
+from fastapi.responses import JSONResponse # Custom JSON responses for errors
+from contextlib import asynccontextmanager # For managing startup/shutdown events in FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Handle Cross-Origin requests
 from pydantic import BaseModel, Field  # Data validation using Python type hints
 import pickle  # For loading the saved model file
@@ -401,6 +403,10 @@ def make_prediction(request_data):
         
         # Extract features in correct order
         feature_columns = artifacts['feature_names']
+        missing_cols = [c for c in feature_columns if c not in df.columns]
+
+        if missing_cols:
+            raise ValueError(f"Missing columns: {missing_cols}")
         X = df[feature_columns]
         
         # Get probability prediction from model
@@ -438,26 +444,33 @@ def make_prediction(request_data):
 # API ENDPOINTS
 # ============================================================================
 
-@app.on_event("startup")
-async def startup_event():
-    """
-    EVENT HANDLER: Runs once when API starts
-    
-    Purpose: Load the model before accepting any requests
-    """
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    global artifacts
+
     logger.info("=" * 80)
     logger.info("SALES PIPELINE API - STARTING UP")
     logger.info("=" * 80)
-    
-    # Load the model
-    global artifacts
+
     artifacts = load_model()
-    
+
     if artifacts is None:
-        logger.error("Failed to load model - API will not work!")
+        logger.error("Failed to load model")
     else:
         logger.info(f"Model loaded with {len(artifacts['feature_names'])} features")
-        logger.info(f"Test ROC-AUC: {artifacts['test_roc_auc']:.4f}")
+
+    yield
+
+    logger.info("Shutting down API")
+
+
+app = FastAPI(
+    title="Sales Pipeline Prediction API",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
 
 @app.get("/")
@@ -541,15 +554,16 @@ async def predict_single(deal: DealPredictionInput):
         PredictionOutput: Prediction result with probabilities and confidence
     
     EXAMPLE REQUEST (curl):
-        curl -X POST "http://localhost:8000/predict" \
+        curl -X POST "http://127.0.0.1:9696/predict" \
              -H "Content-Type: application/json" \
              -d '{
-                 "sales_agent": "john_smith",
-                 "product": "gtx_basic",
-                 "account": "acme_corp",
-                 "sector": "finance",
-                 "office_location": "united_states"
-             }'
+                    "sales_agent": "john_smith",
+                    "product": "gtx_basic",
+                    "account": "acme_corp",
+                    "sector": "finance",
+                    "office_location": "united_states",
+                    "engage_date": "2026-01-15"
+                }'
     
     EXAMPLE RESPONSE:
         {
@@ -593,7 +607,7 @@ async def predict_batch(batch: BatchPredictionInput):
         BatchPredictionOutput: List of predictions plus summary statistics
     
     EXAMPLE REQUEST (curl):
-        curl -X POST "http://localhost:9696/predict-batch" \
+        curl -X POST "http://127.0.0.1:9696/predict-batch" \
              -H "Content-Type: application/json" \
              -d '{
                  "deals": [
@@ -672,6 +686,7 @@ async def predict_batch(batch: BatchPredictionInput):
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
+
     """
     FUNCTION: http_exception_handler
     
@@ -679,16 +694,21 @@ async def http_exception_handler(request, exc):
     
     Logs all HTTP errors for debugging
     """
+    
     logger.error(f"HTTP Error: {exc.status_code} - {exc.detail}")
-    return {
-        "error": exc.detail,
-        "status_code": exc.status_code,
-        "timestamp": datetime.now().isoformat()
-    }
 
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": exc.detail,
+            "status_code": exc.status_code,
+            "timestamp": datetime.now().isoformat()
+        }
+    )
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
+
     """
     FUNCTION: general_exception_handler
     
@@ -696,20 +716,36 @@ async def general_exception_handler(request, exc):
     
     Logs all unexpected errors for debugging
     """
+    
     logger.error(f"Unexpected error: {str(exc)}")
     logger.error(traceback.format_exc())
-    return {
-        "error": "Internal server error",
-        "status_code": 500,
-        "timestamp": datetime.now().isoformat()
-    }
+
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "Internal server error",
+            "status_code": 500,
+            "timestamp": datetime.now().isoformat()
+        }
+    )
+
 
 
 # ============================================================================
 # RUN THE API
 # ============================================================================
 
-if __name__ == "__main__":
+
+    if __name__ == "__main__":
+
+        print("STARTING API")
+
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=9696,
+    )
+    
     """
     This code runs only when you execute this file directly: python main.py
     It does NOT run when main.py is imported into another file
@@ -723,26 +759,25 @@ if __name__ == "__main__":
     PARAMETERS:
         app: The FastAPI application instance
         host="0.0.0.0": Listen on all network interfaces
-        port=8000: Listen on port 8000
+        port=9696: Listen on port 9696
         reload=True: Restart server when code changes (good for development)
         log_level="info": Show info-level logs
     """
+
     
     print("\n" + "=" * 80)
     print("STARTING SALES PIPELINE API")
     print("=" * 80)
     print("\n API Server Starting...")
     print("\nAccess API Documentation:")
-    print("  - Swagger UI: http://localhost:8000/docs") 
-    print("  - ReDoc: http://localhost:8000/redoc") 
+    print("  - Swagger UI: http://localhost:9696/docs") 
+    print("  - ReDoc: http://localhost:9696/redoc") 
     print("\nTest the API:")
-    print("  - Health Check: http://localhost:8000/health") 
-    print("  - Get Metrics: http://localhost:8000/metrics") 
-    print("  - Make Prediction: POST http://localhost:8000/predict")
+    print("  - Health Check: http://localhost:9696/health") 
+    print("  - Get Metrics: http://localhost:9696/metrics") 
+    print("  - Make Prediction: POST http://localhost:9696/predict")
     print("\n" + "=" * 80 + "\n")
     
-    if __name__ == "__main__":
-        uvicorn.run("main:app", host="0.0.0.0", port=9696, reload=True)
 
 """
 ================================================================================
@@ -751,7 +786,7 @@ DEPLOYMENT INSTRUCTIONS
 
 1. DEVELOPMENT (Local Testing):
    python main.py
-   Then visit: http://localhost:8000/docs
+   Then visit: http://localhost:9696/docs
 
 2. PRODUCTION DEPLOYMENT:
    
@@ -772,7 +807,7 @@ DEPLOYMENT INSTRUCTIONS
    
    Build and run:
    docker build -t sales-api .
-   docker run -p 8000:8000 sales-api
+   docker run -p 9696:9696 sales-api
 
    Option C - Cloud Deployment:
    - AWS: Use Elastic Beanstalk or EC2
