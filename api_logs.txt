@@ -1575,3 +1575,9 @@
 2026-05-11 15:28:50,901 - main - INFO -  Model loaded successfully
 2026-05-11 15:28:50,901 - main - INFO - Model loaded with 50 features
 2026-05-11 15:28:50,902 - main - INFO - Test ROC-AUC: 0.6482
+2026-05-11 16:08:52,163 - main - INFO - ================================================================================
+2026-05-11 16:08:52,192 - main - INFO - SALES PIPELINE API - STARTING UP
+2026-05-11 16:08:52,233 - main - INFO - ================================================================================
+2026-05-11 16:08:52,238 - main - INFO - Loading model from sales_pipeline_model.pkl
+2026-05-11 16:09:03,431 - main - INFO -  Model loaded successfully
+2026-05-11 16:09:03,433 - main - INFO - Model loaded with 50 features

@@ -191,16 +191,16 @@ cd sales-pipeline-api
 pipenv install
 
 # Run the API
-pipenv run uvicorn main:app --host 0.0.0.0 --port 8000
+pipenv run uvicorn main:app --host 0.0.0.0 --port 9696
 
 # Access the API:
 Open your browser to the interactive Swagger UI documentation:
-http://localhost:8000/docs
+http://localhost:9696/docs
 ```
 
 ### First Prediction (30 seconds)
 
-Visit the interactive documentation: **http://localhost:8000/docs**
+Visit the interactive documentation: **http://localhost:9696/docs**
 
 1. Click on **POST /predict**
 2. Click **"Try it out"**
@@ -303,7 +303,7 @@ sales-pipeline-api/
 ### Single Deal Prediction
 
 ```bash
-curl -X POST "http://localhost:8000/predict" \
+curl -X POST "http://localhost:9696/predict" \
   -H "Content-Type: application/json" \
   -d '{
     "sales_agent": "john_smith",
@@ -336,7 +336,7 @@ curl -X POST "http://localhost:8000/predict" \
 ### Batch Prediction (Multiple Deals)
 
 ```bash
-curl -X POST "http://localhost:8000/predict-batch" \
+curl -X POST "http://localhost:9696/predict-batch" \
   -H "Content-Type: application/json" \
   -d '{
     "deals": [
@@ -385,7 +385,7 @@ curl -X POST "http://localhost:8000/predict-batch" \
 ### Health Check
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:9696/health
 ```
 
 **Response:**
@@ -400,7 +400,7 @@ curl http://localhost:8000/health
 ### Get Model Metrics
 
 ```bash
-curl http://localhost:8000/metrics
+curl http://localhost:9696/metrics
 ```
 
 **Response:**
@@ -422,7 +422,7 @@ import requests
 import json
 
 # API endpoint
-url = "http://localhost:8000/predict"
+url = "http://localhost:9696/predict"
 
 # Deal data
 deal = {
@@ -457,7 +457,7 @@ print(f"Confidence: {prediction['confidence']:.2%}")
 
 ### Base URL
 ```
-http://localhost:8000
+http://localhost:9696
 ```
 
 ### Authentication
@@ -485,8 +485,8 @@ Currently, the API doesn't require authentication. For production, add API key a
 
 
 ### Interactive Documentation
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- **Swagger UI**: http://localhost:9696/docs
+- **ReDoc**: http://localhost:9696/redoc
 
 ---
 
@@ -707,16 +707,16 @@ print("✓ Test passed")
 
 ```bash
 # Test API health
-curl -s http://localhost:8000/health | python -m json.tool
+curl -s http://localhost:9696/health | python -m json.tool
 
 # Test single prediction
-curl -s -X POST http://localhost:8000/predict \
+curl -s -X POST http://localhost:9696/predict \
   -H "Content-Type: application/json" \
   -d '{"sales_agent": "test", "product": "test", ...}' \
   | python -m json.tool
 
 # Test batch prediction
-curl -s -X POST http://localhost:8000/predict-batch \
+curl -s -X POST http://localhost:9696/predict-batch \
   -H "Content-Type: application/json" \
   -d '{"deals": [...]}' \
   | python -m json.tool
@@ -729,7 +729,7 @@ curl -s -X POST http://localhost:8000/predict-batch \
 ### Local Development
 ```bash
 python main.py
-# Runs on http://localhost:8000
+# Runs on http://localhost:9696
 ```
 
 ### Production with uvicorn
@@ -798,7 +798,7 @@ gcloud run deploy sales-pipeline-api \
   --source . \
   --platform managed \
   --region us-central1 \
-  --port 8000
+  --port 9696
 ```
 
 #### Azure App Service
